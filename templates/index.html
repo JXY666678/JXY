@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f7a55">
+  <title>绿分 · 校园垃圾分类系统</title>
+  <meta name="description" content="拍照上传垃圾照片，AI 自动识别并给出校园垃圾分类建议。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f7a55'/%3E%3Cpath d='M44 18c-16 0-24 10-24 21a9 9 0 0 0 9 9c11 0 15-14 15-30Z' fill='%23bdf0d6'/%3E%3Cpath d='M15 49c7-14 15-21 27-26' stroke='%230f7a55' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body id="top">
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-recycle" viewBox="0 0 24 24">
+      <path d="M7 19H4.8a1.8 1.8 0 0 1-1.56-.88 1.79 1.79 0 0 1 0-1.78L7.2 9.5"/>
+      <path d="M11 19h8.2a1.8 1.8 0 0 0 1.56-.89 1.78 1.78 0 0 0 0-1.78l-1.23-2.12"/>
+      <path d="m14 16-3 3 3 3"/>
+      <path d="M8.29 13.6 7.2 9.5 3.1 10.6"/>
+      <path d="m9.34 5.81 1.1-1.89A1.83 1.83 0 0 1 11.99 3a1.78 1.78 0 0 1 1.54.89l3.94 6.84"/>
+      <path d="m13.38 9.63 4.1 1.1 1.09-4.1"/>
+    </symbol>
+    <symbol id="icon-hazard" viewBox="0 0 24 24">
+      <path d="M12 3 2.6 20h18.8L12 3Z"/>
+      <path d="M12 9v5"/>
+      <circle cx="12" cy="17.2" r=".8"/>
+    </symbol>
+    <symbol id="icon-kitchen" viewBox="0 0 24 24">
+      <path d="M12 7.2c-3.8-2.4-7.2.4-7.2 4.5 0 4 3 7.3 7.2 9.3 4.2-2 7.2-5.3 7.2-9.3 0-4.1-3.4-6.9-7.2-4.5Z"/>
+      <path d="M12 7.2c0-2.4.8-4 2.8-5.2"/>
+      <path d="M14.6 4.7c.4 1.1 1.4 1.7 2.6 1.7"/>
+    </symbol>
+    <symbol id="icon-other" viewBox="0 0 24 24">
+      <path d="M4.5 7h15"/>
+      <path d="M9 7V4.2h6V7"/>
+      <path d="m7 7 .9 13h8.2L17 7"/>
+      <path d="M10.2 10.8v5.6M13.8 10.8v5.6"/>
+    </symbol>
+    <symbol id="icon-camera" viewBox="0 0 24 24">
+      <path d="M4 7.5h3l1.4-2h7.2l1.4 2H20v11H4v-11Z"/>
+      <circle cx="12" cy="13" r="3.6"/>
+      <path d="M8 18.5h8"/>
+    </symbol>
+    <symbol id="icon-spark" viewBox="0 0 24 24">
+      <path d="M12 2.8 13.7 9l6.2 1.7-6.2 1.7-1.7 6.2-1.7-6.2L4.1 10.7 10.3 9 12 2.8Z"/>
+      <path d="m18.6 16.3.7 2.4 2.4.7-2.4.7-.7 2.4-.7-2.4-2.4-.7 2.4-.7.7-2.4Z"/>
+    </symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24">
+      <path d="M12 3 5 5.8v5.4c0 4.3 2.8 7.9 7 9.8 4.2-1.9 7-5.5 7-9.8v-5.4L12 3Z"/>
+      <path d="m9 12 2 2 4-4"/>
+    </symbol>
+    <symbol id="icon-bolt" viewBox="0 0 24 24">
+      <path d="m13 2-8 12h7l-1 8 8-12h-7l1-8Z"/>
+    </symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24">
+      <path d="M5 12h14"/>
+      <path d="m14 7 5 5-5 5"/>
+    </symbol>
+    <symbol id="icon-refresh" viewBox="0 0 24 24">
+      <path d="M20 6v5h-5"/>
+      <path d="M19 11a7 7 0 1 0 .2 3.5"/>
+    </symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24">
+      <path d="m5 12 4.2 4.2L19 6.5"/>
+    </symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24">
+      <path d="m6 6 12 12M18 6 6 18"/>
+    </symbol>
+  </svg>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="#top" aria-label="绿分首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <path d="M45 15c-18 0-27 11-27 23a10 10 0 0 0 10 10c12 0 17-16 17-33Z" fill="currentColor" opacity=".28"/>
+            <path d="M14 50c8-16 17-24 30-29" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <path d="M29 25c5 0 9-2 12-6" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+          </svg>
+        </span>
+        <span class="brand-type">
+          <strong>绿分</strong>
+          <small>CAMPUS SORT</small>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="主导航">
+        <a href="#recognize" class="nav-link is-active">拍照识别</a>
+        <a href="#guide" class="nav-link">分类指南</a>
+        <a href="#history" class="nav-link">识别记录</a>
+      </nav>
+
+      <div class="engine-pill" id="enginePill" data-state="loading" aria-live="polite">
+        <span class="engine-dot"></span>
+        <span id="engineText">AI 引擎加载中</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <svg class="icon" aria-hidden="true"><use href="#icon-spark"></use></svg>
+            AI 视觉识别 · 校园垃圾分类助手
+          </p>
+          <h1>拍照识垃圾，<br><span class="accent">分类不再靠猜。</span></h1>
+          <p class="hero-desc">上传或拍摄一张垃圾照片，AI 会识别物品特征，并给出四类垃圾中的投放建议。让可回收物回到循环，让有害垃圾安全退场。</p>
+
+          <div class="hero-badges">
+            <span class="mini-badge">
+              <svg class="icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
+              照片不出本机
+            </span>
+            <span class="mini-badge">
+              <svg class="icon" aria-hidden="true"><use href="#icon-bolt"></use></svg>
+              本地 AI 推理
+            </span>
+            <span class="mini-badge">
+              <span class="badge-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              覆盖四类标准
+            </span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="orbit-chip orbit-one">
+            <span class="orbit-icon recyclable"><svg><use href="#icon-recycle"></use></svg></span>
+            可回收物
+          </div>
+          <div class="orbit-chip orbit-two">
+            <span class="orbit-icon hazardous"><svg><use href="#icon-hazard"></use></svg></span>
+            有害垃圾
+          </div>
+          <div class="orbit-chip orbit-three">
+            <span class="orbit-icon kitchen"><svg><use href="#icon-kitchen"></use></svg></span>
+            厨余垃圾
+          </div>
+          <div class="demo-frame">
+            <div class="demo-photo">
+              <img src="/static/images/sample_bottle.jpg" alt="">
+              <span class="demo-scan"></span>
+              <span class="demo-corner tl"></span><span class="demo-corner tr"></span>
+              <span class="demo-corner bl"></span><span class="demo-corner br"></span>
+            </div>
+            <div class="demo-result">
+              <span class="demo-check"><svg><use href="#icon-check"></use></svg></span>
+              <div>
+                <small>识别完成 · 匹配度 92%</small>
+                <strong>可回收物</strong>
+              </div>
+              <span class="demo-pill">蓝色桶</span>
+            </div>
+          </div>
+          <div class="hero-note">
+            <svg class="icon"><use href="#icon-camera"></use></svg>
+            <span>看看它属于哪一类？</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="recognize-section" id="recognize">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">01 · 智能识别</p>
+            <h2>上传照片，马上得到分类建议</h2>
+          </div>
+          <p class="privacy-note">
+            <svg class="icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
+            所有识别都在浏览器本地完成，照片不会上传到服务器
+          </p>
+        </div>
+
+        <div class="recognition-grid">
+          <div class="input-card">
+            <div class="card-head">
+              <h3>照片输入</h3>
+              <span class="step-tag">STEP 01</span>
+            </div>
+
+            <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="上传垃圾照片">
+              <input type="file" id="fileInput" accept="image/*" hidden>
+              <div class="drop-visual">
+                <svg class="drop-camera" aria-hidden="true"><use href="#icon-camera"></use></svg>
+                <span class="drop-spark s1"></span>
+                <span class="drop-spark s2"></span>
+              </div>
+              <h4>拖入照片，或点击选择</h4>
+              <p>JPG / PNG / WebP · 建议主体清晰、光线充足</p>
+              <div class="drop-actions">
+                <button class="btn btn-primary" id="chooseFile" type="button">
+                  <svg class="icon" aria-hidden="true"><use href="#icon-camera"></use></svg>
+                  选择照片
+                </button>
+                <button class="btn btn-secondary" id="openCamera" type="button">
+                  拍照识别
+                </button>
+              </div>
+              <span class="upload-hint">也可以把图片直接拖到这里</span>
+            </div>
+
+            <div class="preview-panel" id="previewPanel" hidden>
+              <div class="preview-frame">
+                <img id="previewImage" alt="待识别的垃圾照片">
+                <div class="scan-overlay" id="scanOverlay"><span class="scan-line"></span></div>
+                <button class="icon-button close-preview" id="removeImage" type="button" aria-label="移除照片">
+                  <svg><use href="#icon-close"></use></svg>
+                </button>
+                <div class="preview-tag">
+                  <svg class="icon"><use href="#icon-camera"></use></svg>
+                  照片已就绪
+                </div>
+              </div>
+              <div class="preview-info">
+                <div>
+                  <strong id="fileName">已选择照片</strong>
+                  <p>主体越清晰，识别结果越准确</p>
+                </div>
+                <span id="fileMeta">--</span>
+              </div>
+              <button class="btn btn-primary btn-wide" id="classifyBtn" type="button">
+                开始识别
+                <svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+              </button>
+            </div>
+
+            <div class="samples">
+              <div class="samples-head">
+                <span>没有照片？试试示例</span>
+                <small>点击即可识别</small>
+              </div>
+              <div class="sample-list">
+                <button class="sample-item" type="button" data-sample="/static/images/sample_bottle.jpg" data-name="塑料水瓶">
+                  <img src="/static/images/sample_bottle.jpg" alt="">
+                  <span>塑料瓶</span>
+                </button>
+                <button class="sample-item" type="button" data-sample="/static/images/sample_banana.jpg" data-name="香蕉皮">
+                  <img src="/static/images/sample_banana.jpg" alt="">
+                  <span>香蕉皮</span>
+                </button>
+                <button class="sample-item" type="button" data-sample="/static/images/sample_pills.jpg" data-name="过期药品">
+                  <img src="/static/images/sample_pills.jpg" alt="">
+                  <span>过期药品</span>
+                </button>
+                <button class="sample-item" type="button" data-sample="/static/images/sample_tissue.jpg" data-name="用过的纸巾">
+                  <img src="/static/images/sample_tissue.jpg" alt="">
+                  <span>用过的纸巾</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-card" id="resultCard" data-state="empty" aria-live="polite">
+            <div class="card-head result-head">
+              <h3>识别结果</h3>
+              <span class="step-tag">STEP 02</span>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+              <div class="empty-illustration">
+                <span class="empty-ring ring-a"></span>
+                <span class="empty-ring ring-b"></span>
+                <div class="empty-center">
+                  <svg class="icon"><use href="#icon-spark"></use></svg>
+                </div>
+                <span class="empty-dot dot-a"></span>
+                <span class="empty-dot dot-b"></span>
+                <span class="empty-dot dot-c"></span>
+              </div>
+              <h4>识别结果将在这里出现</h4>
+              <p>上传照片或拍摄物品，AI 会判断它属于哪一类垃圾，并给出投放前的处理建议。</p>
+              <div class="empty-tips">
+                <span>单个物品</span><span>主体居中</span><span>避免遮挡</span>
+              </div>
+            </div>
+
+            <div class="loading-state" id="loadingState" hidden>
+              <div class="ai-loader">
+                <div class="ai-core"><svg class="icon"><use href="#icon-spark"></use></svg></div>
+                <span class="ai-orbit o1"></span>
+                <span class="ai-orbit o2"></span>
+              </div>
+              <h4>AI 正在分析照片</h4>
+              <p id="loadingHint">正在提取图像特征…</p>
+              <div class="loading-track"><span></span></div>
+            </div>
+
+            <div class="result-content" id="resultContent" hidden>
+              <div class="result-topline">
+                <span class="result-status"><svg class="icon"><use href="#icon-check"></use></svg>识别完成</span>
+                <span class="confidence-badge" id="confidenceBadge">匹配度 0%</span>
+              </div>
+
+              <div class="category-hero" id="categoryHero" data-category="recyclable">
+                <span class="category-symbol" id="categorySymbol"></span>
+                <div class="category-copy">
+                  <span class="bin-tag" id="binTag">蓝色 · 可回收物桶</span>
+                  <h2 id="categoryName">可回收物</h2>
+                  <p>识别到：<strong id="objectName">塑料水瓶</strong><span id="objectEn"></span></p>
+                </div>
+              </div>
+
+              <div class="confidence-track">
+                <span id="confidenceFill"></span>
+              </div>
+
+              <div class="advice-box">
+                <div class="advice-head">
+                  <h4>投放前这样做</h4>
+                  <span id="adviceTag">3 个步骤</span>
+                </div>
+                <ul id="adviceList"></ul>
+              </div>
+
+              <div class="alternatives">
+                <div class="alt-head">
+                  <h4>其他可能</h4>
+                  <span>模型对四类垃圾的匹配程度</span>
+                </div>
+                <div id="altBars"></div>
+              </div>
+
+              <div class="correct-box">
+                <div class="correct-title">
+                  <span>结果不准确？</span>
+                  <small>你可以手动修正，帮助记录更真实的数据</small>
+                </div>
+                <div class="correct-actions" id="correctActions"></div>
+              </div>
+
+              <div class="result-actions">
+                <button class="btn btn-secondary" id="resetBtn" type="button">
+                  <svg class="icon"><use href="#icon-refresh"></use></svg>
+                  换一张识别
+                </button>
+                <a class="btn btn-ghost" href="#guide" id="guideLink">查看分类指南</a>
+              </div>
+            </div>
+
+            <div class="error-state" id="errorState" hidden>
+              <span class="error-icon">!</span>
+              <h4>这张照片暂时无法识别</h4>
+              <p id="errorMessage">请换一张主体更清晰、光线更充足的照片。</p>
+              <button class="btn btn-primary" id="retryBtn" type="button">重新选择照片</button>
+            </div>
+
+            <div class="result-footnote">
+              <svg class="icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
+              AI 建议仅供参考，请以本校最新分类规定为准
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon mint"><svg><use href="#icon-camera"></use></svg></span>
+            <div><small>今日识别</small><strong id="statToday">0</strong><span>次</span></div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon blue"><svg><use href="#icon-recycle"></use></svg></span>
+            <div><small>已识别可回收物</small><strong id="statRecyclable">0</strong><span>件</span></div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon red"><svg><use href="#icon-hazard"></use></svg></span>
+            <div><small>已识别有害垃圾</small><strong id="statHazardous">0</strong><span>件</span></div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon slate"><svg><use href="#icon-check"></use></svg></span>
+            <div><small>累计识别</small><strong id="statTotal">0</strong><span>次</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="guide-section" id="guide">
+      <div class="container">
+        <div class="section-head guide-head">
+          <div>
+            <p class="section-kicker">02 · 分类指南</p>
+            <h2>四种垃圾，一眼分清</h2>
+          </div>
+          <p class="section-note">按颜色认准垃圾桶，投放前多一步，校园少一分负担。</p>
+        </div>
+
+        <div class="category-grid">
+          <article class="category-card recyclable-card">
+            <div class="category-card-top">
+              <span class="cat-icon"><svg><use href="#icon-recycle"></use></svg></span>
+              <span class="bin-color"><i></i>蓝色桶</span>
+            </div>
+            <h3>可回收物</h3>
+            <p class="cat-desc">适宜回收、可循环利用的纸类、塑料、玻璃、金属和织物。</p>
+            <div class="example-row">
+              <span>塑料瓶</span><span>易拉罐</span><span>纸箱</span><span>旧书本</span>
+            </div>
+            <div class="cat-tip"><strong>投放要点</strong>清空、晾干、压扁，保持洁净干燥。</div>
+          </article>
+
+          <article class="category-card hazardous-card">
+            <div class="category-card-top">
+              <span class="cat-icon"><svg><use href="#icon-hazard"></use></svg></span>
+              <span class="bin-color"><i></i>红色桶</span>
+            </div>
+            <h3>有害垃圾</h3>
+            <p class="cat-desc">对人体健康或自然环境有直接或潜在危害的废弃物。</p>
+            <div class="example-row">
+              <span>废电池</span><span>过期药品</span><span>废灯管</span><span>油漆桶</span>
+            </div>
+            <div class="cat-tip"><strong>投放要点</strong>单独密封，投入校园有害垃圾专用回收点。</div>
+          </article>
+
+          <article class="category-card kitchen-card">
+            <div class="category-card-top">
+              <span class="cat-icon"><svg><use href="#icon-kitchen"></use></svg></span>
+              <span class="bin-color"><i></i>绿色桶</span>
+            </div>
+            <h3>厨余垃圾</h3>
+            <p class="cat-desc">易腐烂的食材、剩饭剩菜、果皮果核和食物残渣。</p>
+            <div class="example-row">
+              <span>香蕉皮</span><span>剩饭菜</span><span>果核</span><span>茶叶渣</span>
+            </div>
+            <div class="cat-tip"><strong>投放要点</strong>沥干水分，去除塑料袋和餐具后再投入。</div>
+          </article>
+
+          <article class="category-card other-card">
+            <div class="category-card-top">
+              <span class="cat-icon"><svg><use href="#icon-other"></use></svg></span>
+              <span class="bin-color"><i></i>灰色桶</span>
+            </div>
+            <h3>其他垃圾</h3>
+            <p class="cat-desc">除可回收物、有害垃圾、厨余垃圾以外的生活废弃物。</p>
+            <div class="example-row">
+              <span>用过的纸巾</span><span>一次性口罩</span><span>陶瓷碎片</span><span>烟头</span>
+            </div>
+            <div class="cat-tip"><strong>投放要点</strong>袋装密封后投入其他垃圾桶，避免散落。</div>
+          </article>
+        </div>
+
+        <div class="guide-note">
+          <svg class="icon" aria-hidden="true"><use href="#icon-spark"></use></svg>
+          <p>校园常见细则：<strong>碎玻璃、陶瓷</strong>请包裹后投放；<strong>废旧电子产品</strong>请送至校园电子废弃物回收点；<strong>实验室废弃物</strong>请按实验室危废流程处理。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="history-section" id="history">
+      <div class="container">
+        <div class="section-head history-head">
+          <div>
+            <p class="section-kicker">03 · 识别记录</p>
+            <h2>最近识别</h2>
+          </div>
+          <button class="text-button" id="clearHistory" type="button" hidden>清空记录</button>
+        </div>
+        <div class="history-panel">
+          <div class="history-empty" id="historyEmpty">
+            <div class="history-empty-icon"><svg><use href="#icon-refresh"></use></svg></div>
+            <p>还没有识别记录。试着上传一张照片，让第一条记录出现在这里。</p>
+          </div>
+          <ul class="history-list" id="historyList"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark"><svg><use href="#icon-recycle"></use></svg></span>
+        <div><strong>绿分 · 校园垃圾分类系统</strong><p>让每一次投放，都成为校园的绿色选择。</p></div>
+      </div>
+      <p class="footer-meta">AI 模型：MobileNetV2 · 本地推理<br>分类标准参考 GB/T 19095-2019</p>
+    </div>
+  </footer>
+
+  <div class="camera-modal" id="cameraModal" hidden>
+    <div class="camera-backdrop" id="cameraBackdrop"></div>
+    <div class="camera-dialog" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
+      <div class="camera-head">
+        <div>
+          <small>CAMERA</small>
+          <h3 id="cameraTitle">拍摄垃圾照片</h3>
+        </div>
+        <button class="icon-button" id="closeCamera" type="button" aria-label="关闭相机">
+          <svg><use href="#icon-close"></use></svg>
+        </button>
+      </div>
+      <div class="camera-view">
+        <video id="cameraVideo" autoplay playsinline muted></video>
+        <div class="camera-guide"></div>
+        <span class="camera-rec"></span>
+      </div>
+      <p class="camera-hint">将物品放在画面中央，保持光线充足</p>
+      <div class="camera-actions">
+        <button class="btn btn-ghost" id="cancelCamera" type="button">取消</button>
+        <button class="shutter" id="takePhoto" type="button" aria-label="拍摄">
+          <span></span>
+        </button>
+        <span class="camera-placeholder"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/static/vendor/tf.min.js"></script>
+  <script src="/static/vendor/mobilenet.min.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

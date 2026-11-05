@@ -1,0 +1,10 @@
+{
+  "name": "campus-waste-classifier",
+  "private": true,
+  "version": "1.0.0",
+  "description": "校园垃圾分类识别系统",
+  "dependencies": {
+    "@tensorflow-models/mobilenet": "2.1.1",
+    "@tensorflow/tfjs": "4.22.0"
+  }
+}
